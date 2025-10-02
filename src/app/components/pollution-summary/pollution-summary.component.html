@@ -1,0 +1,101 @@
+<div class="summary-container">
+  <h2>Récapitulatif des Déclarations</h2>
+
+  <div class="stats-section" *ngIf="declarations.length > 0">
+    <h3>Statistiques</h3>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-number">{{ getTotalDeclarations() }}</span>
+        <span class="stat-label">Déclaration(s) totale(s)</span>
+      </div>
+      <div class="stat-card" *ngFor="let item of getDeclarationsByType() | keyvalue">
+        <span class="stat-number">{{ item.value }}</span>
+        <span class="stat-label">{{ item.key }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="no-declarations" *ngIf="declarations.length === 0">
+    <div class="empty-state">
+      <h3>Aucune déclaration</h3>
+      <p>Les déclarations de pollution apparaîtront ici une fois soumises.</p>
+    </div>
+  </div>
+
+  <div class="declarations-list" *ngIf="declarations.length > 0">
+    <h3>Déclarations enregistrées</h3>
+
+    <div [class]="getCardClass(i)" *ngFor="let declaration of declarations; let i = index" [id]="getDeclarationId(i)">
+      <div class="card-header">
+        <div class="card-title-section">
+          <h4>{{ declaration.titre }}</h4>
+          <span class="declaration-number" *ngIf="isLastDeclaration(i)">🆕 Nouvelle déclaration</span>
+          <span class="declaration-number" *ngIf="!isLastDeclaration(i)">Déclaration #{{ i + 1 }}</span>
+        </div>
+        <div class="card-actions">
+          <span class="pollution-type" [class]="getPollutionTypeClass(declaration.type)">
+            {{ declaration.type }}
+          </span>
+          <button class="delete-btn" (click)="deleteDeclaration(i)" title="Supprimer">
+            ❌
+          </button>
+        </div>
+      </div>
+
+      <div class="card-content">
+        <div class="field-group">
+          <label>Description :</label>
+          <p>{{ declaration.description }}</p>
+        </div>
+
+        <div class="info-grid">
+          <div class="field-group">
+            <label>Date d'observation :</label>
+            <span>{{ formatDate(declaration.dateObservation) }}</span>
+          </div>
+
+          <div class="field-group" *ngIf="isLastDeclaration(i)">
+            <label>Enregistrée le :</label>
+            <span>{{ formatDateTime(currentDate) }}</span>
+          </div>
+
+          <div class="field-group">
+            <label>Lieu :</label>
+            <span>{{ declaration.lieu }}</span>
+          </div>
+        </div>
+
+        <div class="coordinates-section">
+          <div class="field-group">
+            <label>Coordonnées :</label>
+            <div class="coordinates-info">
+              <span>{{ formatCoordinates(declaration.latitude, declaration.longitude) }}</span>
+              <a
+                [href]="getGoogleMapsUrl(declaration.latitude, declaration.longitude)"
+                target="_blank"
+                class="maps-link"
+                title="Voir sur Google Maps">
+                🗺️ Voir sur la carte
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="photo-section" *ngIf="declaration.photoUrl">
+          <label>Photo :</label>
+          <div class="photo-container">
+            <img
+              [src]="declaration.photoUrl"
+              [alt]="'Photo de ' + declaration.titre"
+              class="pollution-photo"
+              (error)="$event.target.style.display='none'"
+              loading="lazy">
+            <a [href]="declaration.photoUrl" target="_blank" class="photo-link">
+              Voir l'image complète
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

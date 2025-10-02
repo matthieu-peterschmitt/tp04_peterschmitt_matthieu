@@ -1,0 +1,186 @@
+.app-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, rgba(6, 37, 56, 1) 0%, rgba(0, 106, 128, 1) 100%);
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  text-align: center;
+  padding: 2rem 1rem;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.app-header h1 {
+  color: #2c3e50;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.app-header p {
+  color: #7f8c8d;
+  font-size: 1.2rem;
+  margin: 0;
+  font-weight: 400;
+}
+
+.app-main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  padding: 0 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  transition: all 0.5s ease;
+}
+
+.app-main.has-summary {
+  grid-template-columns: 1fr 1fr;
+}
+
+.form-section {
+  display: flex;
+  align-items: flex-start;
+}
+
+.summary-section {
+  display: flex;
+  align-items: flex-start;
+}
+
+.app-footer {
+  text-align: center;
+  padding: 2rem 1rem;
+  background: rgba(44, 62, 80, 0.9);
+  color: white;
+  margin-top: 3rem;
+  backdrop-filter: blur(10px);
+}
+
+.app-footer p {
+  margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .app-main,
+  .app-main.has-summary {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .form-section,
+  .summary-section {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-main {
+    padding: 0 1rem;
+  }
+
+  .app-header h1 {
+    font-size: 2rem;
+  }
+
+  .app-header p {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-header {
+    padding: 1.5rem 0.5rem;
+  }
+
+  .app-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .app-main {
+    padding: 0 0.5rem;
+  }
+}
+
+/* Animations */
+.form-section {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.summary-section {
+  animation: slideInFromRight 0.8s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Classes utilitaires pour le responsive */
+.hidden-mobile {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .hidden-mobile {
+    display: none;
+  }
+
+  .app-main {
+    padding: 0 1rem;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-main {
+    padding: 0 0.5rem;
+    gap: 1rem;
+  }
+}
