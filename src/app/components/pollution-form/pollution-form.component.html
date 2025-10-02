@@ -1,10 +1,9 @@
-<div class="pollution-form-container" *ngIf="!isFormSubmitted">
+@if (!isFormSubmitted()) {
+<div class="pollution-form-container">
   <h2>Déclaration de Pollution</h2>
-
   <form [formGroup]="pollutionForm" (ngSubmit)="onSubmit()" class="pollution-form">
-
     <div class="form-group">
-      <label for="titre">Titre de la pollution *</label>
+      <label for="titre">Titre de la pollution</label>
       <input
         type="text"
         id="titre"
@@ -12,30 +11,36 @@
         class="form-control"
         [class.invalid]="isFieldInvalid('titre')"
         placeholder="Ex: Déversement d'huile dans la rivière">
-      <div class="error-message" *ngIf="isFieldInvalid('titre')">
+      @if (isFieldInvalid('titre')) {
+      <div class="error-message">
         {{ getFieldError('titre') }}
       </div>
+      }
     </div>
 
     <div class="form-group">
-      <label for="type">Type de pollution *</label>
+      <label for="type">Type de pollution</label>
       <select
         id="type"
         formControlName="type"
         class="form-control"
         [class.invalid]="isFieldInvalid('type')">
         <option value="">Sélectionnez un type</option>
-        <option *ngFor="let type of pollutionTypes" [value]="type">
+        @for (type of pollutionTypes; track type) {
+        <option [value]="type">
           {{ type }}
         </option>
+        }
       </select>
-      <div class="error-message" *ngIf="isFieldInvalid('type')">
+      @if (isFieldInvalid('type')) {
+      <div class="error-message">
         {{ getFieldError('type') }}
       </div>
+      }
     </div>
 
     <div class="form-group">
-      <label for="description">Description *</label>
+      <label for="description">Description</label>
       <textarea
         id="description"
         formControlName="description"
@@ -43,26 +48,30 @@
         [class.invalid]="isFieldInvalid('description')"
         rows="4"
         placeholder="Décrivez en détail la pollution observée..."></textarea>
-      <div class="error-message" *ngIf="isFieldInvalid('description')">
+      @if (isFieldInvalid('description')) {
+      <div class="error-message">
         {{ getFieldError('description') }}
       </div>
+      }
     </div>
 
     <div class="form-group">
-      <label for="dateObservation">Date de l'observation *</label>
+      <label for="dateObservation">Date de l'observation</label>
       <input
         type="date"
         id="dateObservation"
         formControlName="dateObservation"
         class="form-control"
         [class.invalid]="isFieldInvalid('dateObservation')">
-      <div class="error-message" *ngIf="isFieldInvalid('dateObservation')">
+      @if (isFieldInvalid('dateObservation')) {
+      <div class="error-message">
         {{ getFieldError('dateObservation') }}
       </div>
+      }
     </div>
 
     <div class="form-group">
-      <label for="lieu">Lieu *</label>
+      <label for="lieu">Lieu</label>
       <input
         type="text"
         id="lieu"
@@ -70,14 +79,16 @@
         class="form-control"
         [class.invalid]="isFieldInvalid('lieu')"
         placeholder="Ex: Parc de la Villette, Paris">
-      <div class="error-message" *ngIf="isFieldInvalid('lieu')">
+      @if (isFieldInvalid('lieu')) {
+      <div class="error-message">
         {{ getFieldError('lieu') }}
       </div>
+      }
     </div>
 
     <div class="coordinates-group">
       <div class="form-group">
-        <label for="latitude">Latitude *</label>
+        <label for="latitude">Latitude</label>
         <input
           type="number"
           id="latitude"
@@ -88,13 +99,15 @@
           placeholder="Ex: 48.8566 (entre -90 et 90)"
           min="-90"
           max="90">
-        <div class="error-message" *ngIf="isFieldInvalid('latitude')">
+        @if (isFieldInvalid('latitude')) {
+        <div class="error-message">
           {{ getFieldError('latitude') }}
         </div>
+        }
       </div>
 
       <div class="form-group">
-        <label for="longitude">Longitude *</label>
+        <label for="longitude">Longitude</label>
         <input
           type="number"
           id="longitude"
@@ -105,9 +118,11 @@
           placeholder="Ex: 2.3522 (entre -180 et 180)"
           min="-180"
           max="180">
-        <div class="error-message" *ngIf="isFieldInvalid('longitude')">
+        @if (isFieldInvalid('longitude')) {
+        <div class="error-message">
           {{ getFieldError('longitude') }}
         </div>
+        }
       </div>
     </div>
 
@@ -120,9 +135,11 @@
         class="form-control"
         [class.invalid]="isFieldInvalid('photoUrl')"
         placeholder="https://exemple.com/photo.jpg (optionnel)">
-      <div class="error-message" *ngIf="isFieldInvalid('photoUrl')">
+      @if (isFieldInvalid('photoUrl')) {
+      <div class="error-message">
         {{ getFieldError('photoUrl') }}
       </div>
+      }
       <small class="form-text">Optionnel - URL d'une photo de la pollution (formats supportés: jpg, png, gif, webp, bmp, svg)</small>
     </div>
 
@@ -143,8 +160,10 @@
 
   </form>
 </div>
+}
 
-<div class="success-message" *ngIf="isFormSubmitted">
+@if (isFormSubmitted()) {
+<div class="success-message">
   <div class="success-content">
     <div class="success-icon">✅</div>
     <h2>Déclaration enregistrée avec succès!</h2>
@@ -154,3 +173,4 @@
     </button>
   </div>
 </div>
+}

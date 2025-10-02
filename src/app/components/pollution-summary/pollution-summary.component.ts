@@ -1,34 +1,31 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, EventEmitter, Input, Output, signal } from '@angular/core';
 import { PollutionDeclaration } from '../../interfaces/pollution-declaration.interface';
 
 @Component({
   selector: 'app-pollution-summary',
-  standalone: true,
   imports: [CommonModule],
   templateUrl: './pollution-summary.component.html',
-  styleUrls: ['./pollution-summary.component.css']
+  styleUrls: ['./pollution-summary.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PollutionSummaryComponent implements OnInit, OnChanges {
+export class PollutionSummaryComponent {
   @Input() declarations: PollutionDeclaration[] = [];
   @Input() highlightLast: boolean = false;
 
-  lastDeclarationIndex: number = -1;
-  currentDate: Date = new Date();
+  @Output() declarationDeleted = new EventEmitter<number>();
 
-  ngOnInit(): void {
-    this.updateLastDeclarationIndex();
-  }
+  protected readonly currentDate = signal(new Date());
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['declarations']) {
-      this.updateLastDeclarationIndex();
-    }
-  }
-
-  private updateLastDeclarationIndex(): void {
-    this.lastDeclarationIndex = this.declarations.length - 1;
-  }
+  protected readonly lastDeclarationIndex = computed(() => this.declarations.length - 1);
+  protected readonly totalDeclarations = computed(() => this.declarations.length);
+  protected readonly declarationsByType = computed(() => {
+    const counts: { [key: string]: number } = {};
+    this.declarations.forEach(declaration => {
+      counts[declaration.type] = (counts[declaration.type] || 0) + 1;
+    });
+    return counts;
+  });
 
   formatDate(date: Date): string {
     return new Intl.DateTimeFormat('fr-FR', {
@@ -47,19 +44,14 @@ export class PollutionSummaryComponent implements OnInit, OnChanges {
   }
 
   deleteDeclaration(index: number): void {
-    this.declarations.splice(index, 1);
+    this.declarationDeleted.emit(index);
   }
 
-  getTotalDeclarations(): number {
-    return this.declarations.length;
-  }
-
-  getDeclarationsByType(): { [key: string]: number } {
-    const counts: { [key: string]: number } = {};
-    this.declarations.forEach(declaration => {
-      counts[declaration.type] = (counts[declaration.type] || 0) + 1;
-    });
-    return counts;
+  onImageError(event: Event): void {
+    const target = event.target as HTMLImageElement;
+    if (target) {
+      target.style.display = 'none';
+    }
   }
 
   getPollutionTypeClass(type: string): string {
@@ -67,7 +59,7 @@ export class PollutionSummaryComponent implements OnInit, OnChanges {
   }
 
   isLastDeclaration(index: number): boolean {
-    return this.highlightLast && index === this.lastDeclarationIndex;
+    return this.highlightLast && index === this.lastDeclarationIndex();
   }
 
   getCardClass(index: number): string {

@@ -10,13 +10,15 @@
       </app-pollution-form>
     </div>
 
-    <div class="summary-section" *ngIf="hasDeclarations()">
-      <app-pollution-summary [declarations]="declarations" [highlightLast]="true">
+    @if (hasDeclarations()) {
+    <div class="summary-section">
+      <app-pollution-summary
+        [declarations]="declarations()"
+        [highlightLast]="true"
+        (declarationDeleted)="onDeclarationDeleted($event)"
+      >
       </app-pollution-summary>
     </div>
+    }
   </main>
-
-  <footer class="app-footer">
-    <p>&copy; 2025 - Plateforme de Déclaration de Pollution</p>
-  </footer>
 </div>

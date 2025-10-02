@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { PollutionFormComponent } from './components/pollution-form/pollution-form.component';
 import { PollutionSummaryComponent } from './components/pollution-summary/pollution-summary.component';
 import { PollutionDeclaration } from './interfaces/pollution-declaration.interface';
@@ -8,29 +8,31 @@ import { PollutionDeclaration } from './interfaces/pollution-declaration.interfa
   selector: 'app-root',
   imports: [CommonModule, PollutionFormComponent, PollutionSummaryComponent],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrl: './app.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class App {
   protected readonly title = signal('tp2');
-  declarations: PollutionDeclaration[] = [];
-  currentDeclaration: PollutionDeclaration | null = null;
+  protected readonly declarations = signal<PollutionDeclaration[]>([]);
+
+  protected readonly hasDeclarations = computed(() => this.declarations().length > 0);
+  protected readonly lastDeclaration = computed(() => {
+    const declarations = this.declarations();
+    return declarations.length > 0 ? declarations[declarations.length - 1] : null;
+  });
 
   onDeclarationSubmitted(declaration: PollutionDeclaration): void {
-    // Ajouter la déclaration à la liste
-    this.declarations.push(declaration);
-
-    // affichage immédiat
-    this.currentDeclaration = declaration;
+    this.declarations.update(current => [...current, declaration]);
 
     console.log('Nouvelle déclaration ajoutée:', declaration);
-    console.log('Total des déclarations:', this.declarations.length);
+    console.log('Total des déclarations:', this.declarations().length);
   }
 
-  hasDeclarations(): boolean {
-    return this.declarations.length > 0;
-  }
-
-  getLastDeclaration(): PollutionDeclaration | null {
-    return this.currentDeclaration;
+  onDeclarationDeleted(index: number): void {
+    this.declarations.update(current => {
+      const updated = [...current];
+      updated.splice(index, 1);
+      return updated;
+    });
   }
 }

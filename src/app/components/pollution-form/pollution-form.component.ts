@@ -1,23 +1,25 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Output, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PollutionDeclaration, PollutionType } from '../../interfaces/pollution-declaration.interface';
 
 @Component({
   selector: 'app-pollution-form',
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './pollution-form.component.html',
-  styleUrls: ['./pollution-form.component.css']
+  styleUrls: ['./pollution-form.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PollutionFormComponent {
+  private readonly formBuilder = inject(FormBuilder);
+
   @Output() declarationSubmitted = new EventEmitter<PollutionDeclaration>();
 
   pollutionForm: FormGroup;
   pollutionTypes = Object.values(PollutionType);
-  isFormSubmitted = false;
+  protected readonly isFormSubmitted = signal(false);
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor() {
     this.pollutionForm = this.formBuilder.group({
       titre: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       type: ['', Validators.required],
@@ -45,7 +47,7 @@ export class PollutionFormComponent {
       };
 
       this.declarationSubmitted.emit(declaration);
-      this.isFormSubmitted = true;
+      this.isFormSubmitted.set(true);
     } else {
       this.markAllFieldsAsTouched();
     }
@@ -58,7 +60,7 @@ export class PollutionFormComponent {
   }
 
   resetForm(): void {
-    this.isFormSubmitted = false;
+    this.isFormSubmitted.set(false);
     this.pollutionForm.reset();
   }
 

@@ -1,36 +1,47 @@
 <div class="summary-container">
   <h2>Récapitulatif des Déclarations</h2>
 
-  <div class="stats-section" *ngIf="declarations.length > 0">
+  @if (declarations.length > 0) {
+  <div class="stats-section">
     <h3>Statistiques</h3>
     <div class="stats-grid">
       <div class="stat-card">
-        <span class="stat-number">{{ getTotalDeclarations() }}</span>
+        <span class="stat-number">{{ totalDeclarations() }}</span>
         <span class="stat-label">Déclaration(s) totale(s)</span>
       </div>
-      <div class="stat-card" *ngFor="let item of getDeclarationsByType() | keyvalue">
+      @for (item of declarationsByType() | keyvalue; track item.key) {
+      <div class="stat-card">
         <span class="stat-number">{{ item.value }}</span>
         <span class="stat-label">{{ item.key }}</span>
       </div>
+      }
     </div>
   </div>
+  }
 
-  <div class="no-declarations" *ngIf="declarations.length === 0">
+  @if (declarations.length === 0) {
+  <div class="no-declarations">
     <div class="empty-state">
       <h3>Aucune déclaration</h3>
       <p>Les déclarations de pollution apparaîtront ici une fois soumises.</p>
     </div>
   </div>
+  }
 
-  <div class="declarations-list" *ngIf="declarations.length > 0">
+  @if (declarations.length > 0) {
+  <div class="declarations-list">
     <h3>Déclarations enregistrées</h3>
 
-    <div [class]="getCardClass(i)" *ngFor="let declaration of declarations; let i = index" [id]="getDeclarationId(i)">
+    @for (declaration of declarations; track $index; let i = $index) {
+    <div [class]="getCardClass(i)" [id]="getDeclarationId(i)">
       <div class="card-header">
         <div class="card-title-section">
           <h4>{{ declaration.titre }}</h4>
-          <span class="declaration-number" *ngIf="isLastDeclaration(i)">🆕 Nouvelle déclaration</span>
-          <span class="declaration-number" *ngIf="!isLastDeclaration(i)">Déclaration #{{ i + 1 }}</span>
+          @if (isLastDeclaration(i)) {
+          <span class="declaration-number">🆕 Nouvelle déclaration</span>
+          } @else {
+          <span class="declaration-number">Déclaration #{{ i + 1 }}</span>
+          }
         </div>
         <div class="card-actions">
           <span class="pollution-type" [class]="getPollutionTypeClass(declaration.type)">
@@ -54,10 +65,12 @@
             <span>{{ formatDate(declaration.dateObservation) }}</span>
           </div>
 
-          <div class="field-group" *ngIf="isLastDeclaration(i)">
+          @if (isLastDeclaration(i)) {
+          <div class="field-group">
             <label>Enregistrée le :</label>
-            <span>{{ formatDateTime(currentDate) }}</span>
+            <span>{{ formatDateTime(currentDate()) }}</span>
           </div>
+          }
 
           <div class="field-group">
             <label>Lieu :</label>
@@ -81,21 +94,25 @@
           </div>
         </div>
 
-        <div class="photo-section" *ngIf="declaration.photoUrl">
+        @if (declaration.photoUrl) {
+        <div class="photo-section">
           <label>Photo :</label>
           <div class="photo-container">
             <img
               [src]="declaration.photoUrl"
               [alt]="'Photo de ' + declaration.titre"
               class="pollution-photo"
-              (error)="$event.target.style.display='none'"
+              (error)="onImageError($event)"
               loading="lazy">
             <a [href]="declaration.photoUrl" target="_blank" class="photo-link">
               Voir l'image complète
             </a>
           </div>
         </div>
+        }
       </div>
     </div>
+    }
   </div>
+  }
 </div>
