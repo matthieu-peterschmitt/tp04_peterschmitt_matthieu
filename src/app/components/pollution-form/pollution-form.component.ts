@@ -1,200 +1,341 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, EventEmitter, inject, Output, signal } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { PollutionDeclaration, PollutionType } from '../../interfaces/pollution-declaration.interface';
+import { CommonModule } from "@angular/common";
+import {
+	ChangeDetectionStrategy,
+	Component,
+	EventEmitter,
+	inject,
+	input,
+	type OnInit,
+	Output,
+	signal,
+} from "@angular/core";
+import {
+	FormBuilder,
+	type FormGroup,
+	ReactiveFormsModule,
+	Validators,
+} from "@angular/forms";
+import { Router } from "@angular/router";
+import { catchError, EMPTY } from "rxjs";
+import {
+	type PollutionDeclaration,
+	PollutionType,
+} from "../../interfaces/pollution-declaration.interface";
+import { PollutionService } from "../../services/pollution.service";
 
 @Component({
-  selector: 'app-pollution-form',
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './pollution-form.component.html',
-  styleUrls: ['./pollution-form.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+	selector: "app-pollution-form",
+	imports: [CommonModule, ReactiveFormsModule],
+	templateUrl: "./pollution-form.component.html",
+	styleUrls: ["./pollution-form.component.css"],
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PollutionFormComponent {
-  private readonly formBuilder = inject(FormBuilder);
+export class PollutionFormComponent implements OnInit {
+	private readonly formBuilder = inject(FormBuilder);
+	private readonly pollutionService = inject(PollutionService);
+	private readonly router = inject(Router);
 
-  @Output() declarationSubmitted = new EventEmitter<PollutionDeclaration>();
+	// Input pour la pollution à éditer (optionnel)
+	pollution = input<PollutionDeclaration | null>(null);
 
-  pollutionForm: FormGroup;
-  pollutionTypes = Object.values(PollutionType);
-  protected readonly isFormSubmitted = signal(false);
+	@Output() declarationSubmitted = new EventEmitter<PollutionDeclaration>();
 
-  constructor() {
-    this.pollutionForm = this.formBuilder.group({
-      titre: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
-      type: ['', Validators.required],
-      description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
-      dateObservation: ['', [Validators.required, this.dateValidator]],
-      lieu: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
-      latitude: ['', [Validators.required, this.coordinateValidator('latitude')]],
-      longitude: ['', [Validators.required, this.coordinateValidator('longitude')]],
-      photoUrl: ['', [this.urlValidator]]
-    });
-  }
+	pollutionForm: FormGroup;
+	pollutionTypes = Object.values(PollutionType);
+	protected readonly isFormSubmitted = signal(false);
+	protected readonly isLoading = signal(false);
+	protected readonly errorMessage = signal<string | null>(null);
+	protected readonly isEditMode = signal(false);
 
-  onSubmit(): void {
-    if (this.pollutionForm.valid) {
-      const formValue = this.pollutionForm.value;
-      const declaration: PollutionDeclaration = {
-        titre: formValue.titre.trim(),
-        type: formValue.type as PollutionType,
-        description: formValue.description.trim(),
-        dateObservation: new Date(formValue.dateObservation),
-        lieu: formValue.lieu.trim(),
-        latitude: parseFloat(formValue.latitude),
-        longitude: parseFloat(formValue.longitude),
-        photoUrl: formValue.photoUrl ? formValue.photoUrl.trim() : undefined
-      };
+	constructor() {
+		this.pollutionForm = this.formBuilder.group({
+			titre: [
+				"",
+				[
+					Validators.required,
+					Validators.minLength(3),
+					Validators.maxLength(100),
+				],
+			],
+			type: ["", Validators.required],
+			description: [
+				"",
+				[
+					Validators.required,
+					Validators.minLength(10),
+					Validators.maxLength(500),
+				],
+			],
+			dateObservation: ["", [Validators.required, this.dateValidator]],
+			lieu: [
+				"",
+				[
+					Validators.required,
+					Validators.minLength(3),
+					Validators.maxLength(100),
+				],
+			],
+			latitude: [
+				"",
+				[Validators.required, this.coordinateValidator("latitude")],
+			],
+			longitude: [
+				"",
+				[Validators.required, this.coordinateValidator("longitude")],
+			],
+			photoUrl: ["", [this.urlValidator]],
+		});
+	}
 
-      this.declarationSubmitted.emit(declaration);
-      this.isFormSubmitted.set(true);
-    } else {
-      this.markAllFieldsAsTouched();
-    }
-  }
+	ngOnInit(): void {
+		const pollutionToEdit = this.pollution();
+		if (pollutionToEdit) {
+			this.isEditMode.set(true);
+			this.populateForm(pollutionToEdit);
+		}
+	}
 
-  private markAllFieldsAsTouched(): void {
-    Object.keys(this.pollutionForm.controls).forEach(key => {
-      this.pollutionForm.get(key)?.markAsTouched();
-    });
-  }
+	private populateForm(pollution: PollutionDeclaration): void {
+		// Convertir la date en format yyyy-MM-dd pour l'input date
+		const dateString =
+			pollution.dateObservation instanceof Date
+				? pollution.dateObservation.toISOString().split("T")[0]
+				: new Date(pollution.dateObservation).toISOString().split("T")[0];
 
-  resetForm(): void {
-    this.isFormSubmitted.set(false);
-    this.pollutionForm.reset();
-  }
+		this.pollutionForm.patchValue({
+			titre: pollution.titre,
+			type: pollution.type,
+			description: pollution.description,
+			dateObservation: dateString,
+			lieu: pollution.lieu,
+			latitude: pollution.latitude,
+			longitude: pollution.longitude,
+			photoUrl: pollution.photoUrl || "",
+		});
+	}
 
-  dateValidator(control: any) {
-    if (!control.value) return null;
+	onSubmit(): void {
+		if (this.pollutionForm.valid) {
+			const formValue = this.pollutionForm.value;
+			const declaration: PollutionDeclaration = {
+				titre: formValue.titre.trim(),
+				type: formValue.type as PollutionType,
+				description: formValue.description.trim(),
+				dateObservation: new Date(formValue.dateObservation),
+				lieu: formValue.lieu.trim(),
+				latitude: parseFloat(formValue.latitude),
+				longitude: parseFloat(formValue.longitude),
+				photoUrl: formValue.photoUrl ? formValue.photoUrl.trim() : undefined,
+			};
 
-    const selectedDate = new Date(control.value);
-    const today = new Date();
-    const minDate = new Date('1900-01-01');
+			if (this.isEditMode()) {
+				this.updatePollution(declaration);
+			} else {
+				this.createPollution(declaration);
+			}
+		} else {
+			this.markAllFieldsAsTouched();
+		}
+	}
 
-    if (isNaN(selectedDate.getTime())) {
-      return { invalidDate: true };
-    }
+	private createPollution(declaration: PollutionDeclaration): void {
+		this.isLoading.set(true);
+		this.errorMessage.set(null);
 
-    if (selectedDate > today) {
-      return { futureDate: true };
-    }
+		this.pollutionService
+			.createPollution(declaration)
+			.pipe(
+				catchError((error) => {
+					this.errorMessage.set("Erreur lors de la création: " + error.message);
+					this.isLoading.set(false);
+					return EMPTY;
+				}),
+			)
+			.subscribe((createdPollution) => {
+				this.declarationSubmitted.emit(createdPollution);
+				this.isFormSubmitted.set(true);
+				this.isLoading.set(false);
 
-    if (selectedDate < minDate) {
-      return { tooOldDate: true };
-    }
+				// Rediriger vers la liste ou les détails
+				setTimeout(() => {
+					this.router.navigate(["/pollutions"]);
+				}, 2000);
+			});
+	}
 
-    return null;
-  }
+	private updatePollution(declaration: PollutionDeclaration): void {
+		const pollutionToUpdate = this.pollution();
+		if (!pollutionToUpdate?.id) return;
 
-  coordinateValidator(type: 'latitude' | 'longitude') {
-    return (control: any) => {
-      if (!control.value) return null;
+		this.isLoading.set(true);
+		this.errorMessage.set(null);
 
-      const value = parseFloat(control.value);
+		this.pollutionService
+			.updatePollution(pollutionToUpdate.id, declaration)
+			.pipe(
+				catchError((error) => {
+					this.errorMessage.set(
+						"Erreur lors de la mise à jour: " + error.message,
+					);
+					this.isLoading.set(false);
+					return EMPTY;
+				}),
+			)
+			.subscribe((updatedPollution) => {
+				this.declarationSubmitted.emit(updatedPollution);
+				this.isFormSubmitted.set(true);
+				this.isLoading.set(false);
 
-      if (isNaN(value)) {
-        return { invalidNumber: true };
-      }
+				// Rediriger vers les détails
+				setTimeout(() => {
+					this.router.navigate(["/pollution", updatedPollution.id]);
+				}, 2000);
+			});
+	}
 
-      if (type === 'latitude') {
-        if (value < -90 || value > 90) {
-          return { latitudeOutOfRange: true };
-        }
-      } else if (type === 'longitude') {
-        if (value < -180 || value > 180) {
-          return { longitudeOutOfRange: true };
-        }
-      }
+	private markAllFieldsAsTouched(): void {
+		Object.keys(this.pollutionForm.controls).forEach((key) => {
+			this.pollutionForm.get(key)?.markAsTouched();
+		});
+	}
 
-      return null;
-    };
-  }
+	resetForm(): void {
+		this.isFormSubmitted.set(false);
+		this.pollutionForm.reset();
+	}
 
-  urlValidator(control: any) {
-    if (!control.value || control.value.trim() === '') return null;
+	dateValidator(control: { value: any }) {
+		if (!control.value) return null;
 
-    const urlPattern = /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp|bmp|svg)(\?.*)?$/i;
+		const selectedDate = new Date(control.value);
+		const today = new Date();
+		const minDate = new Date("1900-01-01");
 
-    if (!urlPattern.test(control.value.trim())) {
-      return { invalidImageUrl: true };
-    }
+		if (Number.isNaN(selectedDate.getTime())) {
+			return { invalidDate: true };
+		}
 
-    return null;
-  }
+		if (selectedDate > today) {
+			return { futureDate: true };
+		}
 
-  getFieldError(fieldName: string): string {
-    const field = this.pollutionForm.get(fieldName);
+		if (selectedDate < minDate) {
+			return { tooOldDate: true };
+		}
 
-    if (field?.errors && field.touched) {
-      if (field.errors['required']) {
-        return this.getRequiredErrorMessage(fieldName);
-      }
-      if (field.errors['minlength']) {
-        const requiredLength = field.errors['minlength'].requiredLength;
-        return `${this.getFieldDisplayName(fieldName)} doit contenir au moins ${requiredLength} caractères.`;
-      }
-      if (field.errors['maxlength']) {
-        const maxLength = field.errors['maxlength'].requiredLength;
-        return `${this.getFieldDisplayName(fieldName)} ne peut pas dépasser ${maxLength} caractères.`;
-      }
+		return null;
+	}
 
-      if (field.errors['invalidNumber']) {
-        return `${this.getFieldDisplayName(fieldName)} doit être un nombre valide.`;
-      }
-      if (field.errors['latitudeOutOfRange']) {
-        return 'La latitude doit être comprise entre -90 et 90 degrés.';
-      }
-      if (field.errors['longitudeOutOfRange']) {
-        return 'La longitude doit être comprise entre -180 et 180 degrés.';
-      }
+	coordinateValidator(type: "latitude" | "longitude") {
+		return (control: { value: any }) => {
+			if (!control.value) return null;
 
-      if (field.errors['invalidDate']) {
-        return 'La date saisie n\'est pas valide.';
-      }
-      if (field.errors['futureDate']) {
-        return 'La date ne peut pas être dans le futur.';
-      }
-      if (field.errors['tooOldDate']) {
-        return 'La date ne peut pas être antérieure à 1900.';
-      }
+			const value = parseFloat(control.value);
 
-      if (field.errors['invalidImageUrl']) {
-        return 'L\'URL doit pointer vers une image valide (jpg, png, gif, etc.).';
-      }
-    }
+			if (Number.isNaN(value)) {
+				return { invalidNumber: true };
+			}
 
-    return '';
-  }
+			if (type === "latitude") {
+				if (value < -90 || value > 90) {
+					return { latitudeOutOfRange: true };
+				}
+			} else if (type === "longitude") {
+				if (value < -180 || value > 180) {
+					return { longitudeOutOfRange: true };
+				}
+			}
 
-  private getRequiredErrorMessage(fieldName: string): string {
-    const messages: { [key: string]: string } = {
-      'titre': 'Le titre de la pollution est requis.',
-      'type': 'Le type de pollution est requis.',
-      'description': 'La description de la pollution est requise.',
-      'dateObservation': 'La date d\'observation est requise.',
-      'lieu': 'Le lieu de la pollution est requis.',
-      'latitude': 'La latitude est requise.',
-      'longitude': 'La longitude est requise.'
-    };
-    return messages[fieldName] || `Le champ ${fieldName} est requis.`;
-  }
+			return null;
+		};
+	}
 
-  private getFieldDisplayName(fieldName: string): string {
-    const names: { [key: string]: string } = {
-      'titre': 'Le titre',
-      'type': 'Le type',
-      'description': 'La description',
-      'dateObservation': 'La date',
-      'lieu': 'Le lieu',
-      'latitude': 'La latitude',
-      'longitude': 'La longitude',
-      'photoUrl': 'L\'URL de la photo'
-    };
-    return names[fieldName] || fieldName;
-  }
+	urlValidator(control: { value: any }) {
+		if (!control.value || control.value.trim() === "") return null;
 
-  isFieldInvalid(fieldName: string): boolean {
-    const field = this.pollutionForm.get(fieldName);
-    return !!(field?.invalid && field?.touched);
-  }
+		const urlPattern =
+			/^https?:\/\/.+\.(jpg|jpeg|png|gif|webp|bmp|svg)(\?.*)?$/i;
+
+		if (!urlPattern.test(control.value.trim())) {
+			return { invalidImageUrl: true };
+		}
+
+		return null;
+	}
+
+	getFieldError(fieldName: string): string {
+		const field = this.pollutionForm.get(fieldName);
+
+		if (field?.errors && field.touched) {
+			if (field.errors["required"]) {
+				return this.getRequiredErrorMessage(fieldName);
+			}
+			if (field.errors["minlength"]) {
+				const requiredLength = field.errors["minlength"].requiredLength;
+				return `${this.getFieldDisplayName(fieldName)} doit contenir au moins ${requiredLength} caractères.`;
+			}
+			if (field.errors["maxlength"]) {
+				const maxLength = field.errors["maxlength"].requiredLength;
+				return `${this.getFieldDisplayName(fieldName)} ne peut pas dépasser ${maxLength} caractères.`;
+			}
+
+			if (field.errors["invalidNumber"]) {
+				return `${this.getFieldDisplayName(fieldName)} doit être un nombre valide.`;
+			}
+			if (field.errors["latitudeOutOfRange"]) {
+				return "La latitude doit être comprise entre -90 et 90 degrés.";
+			}
+			if (field.errors["longitudeOutOfRange"]) {
+				return "La longitude doit être comprise entre -180 et 180 degrés.";
+			}
+
+			if (field.errors["invalidDate"]) {
+				return "La date saisie n'est pas valide.";
+			}
+			if (field.errors["futureDate"]) {
+				return "La date ne peut pas être dans le futur.";
+			}
+			if (field.errors["tooOldDate"]) {
+				return "La date ne peut pas être antérieure à 1900.";
+			}
+
+			if (field.errors["invalidImageUrl"]) {
+				return "L'URL doit pointer vers une image valide (jpg, png, gif, etc.).";
+			}
+		}
+
+		return "";
+	}
+
+	private getRequiredErrorMessage(fieldName: string): string {
+		const messages: { [key: string]: string } = {
+			titre: "Le titre de la pollution est requis.",
+			type: "Le type de pollution est requis.",
+			description: "La description de la pollution est requise.",
+			dateObservation: "La date d'observation est requise.",
+			lieu: "Le lieu de la pollution est requis.",
+			latitude: "La latitude est requise.",
+			longitude: "La longitude est requise.",
+		};
+		return messages[fieldName] || `Le champ ${fieldName} est requis.`;
+	}
+
+	private getFieldDisplayName(fieldName: string): string {
+		const names: { [key: string]: string } = {
+			titre: "Le titre",
+			type: "Le type",
+			description: "La description",
+			dateObservation: "La date",
+			lieu: "Le lieu",
+			latitude: "La latitude",
+			longitude: "La longitude",
+			photoUrl: "L'URL de la photo",
+		};
+		return names[fieldName] || fieldName;
+	}
+
+	isFieldInvalid(fieldName: string): boolean {
+		const field = this.pollutionForm.get(fieldName);
+		return !!(field?.invalid && field?.touched);
+	}
 }

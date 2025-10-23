@@ -1,24 +1,19 @@
 <div class="app-container">
   <header class="app-header">
-    <h1>🌍 Déclaration de Pollution Environnementale</h1>
-    <p>Signalez les pollutions observées pour protéger notre environnement</p>
+    <h1>🌍 {{ title }}</h1>
+    <p>Système de gestion des déclarations de pollution environnementale</p>
+
+    <nav class="app-nav">
+      <a routerLink="/pollutions" class="nav-link">📋 Liste des Pollutions</a>
+      <a routerLink="/pollution/new" class="nav-link">➕ Nouvelle Déclaration</a>
+    </nav>
   </header>
 
-  <main class="app-main" [class.has-summary]="hasDeclarations()">
-    <div class="form-section">
-      <app-pollution-form (declarationSubmitted)="onDeclarationSubmitted($event)">
-      </app-pollution-form>
-    </div>
-
-    @if (hasDeclarations()) {
-    <div class="summary-section">
-      <app-pollution-summary
-        [declarations]="declarations()"
-        [highlightLast]="true"
-        (declarationDeleted)="onDeclarationDeleted($event)"
-      >
-      </app-pollution-summary>
-    </div>
-    }
+  <main class="app-main">
+    <router-outlet></router-outlet>
   </main>
+
+  <footer class="app-footer">
+    <p>&copy; 2024 - TP3 Angular - Gestion des Pollutions</p>
+  </footer>
 </div>

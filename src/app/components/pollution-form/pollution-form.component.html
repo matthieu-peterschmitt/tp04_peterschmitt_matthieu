@@ -1,6 +1,13 @@
 @if (!isFormSubmitted()) {
 <div class="pollution-form-container">
-  <h2>Déclaration de Pollution</h2>
+  <h2>{{ isEditMode() ? 'Modifier la Pollution' : 'Déclaration de Pollution' }}</h2>
+
+  @if (errorMessage()) {
+    <div class="error-alert">
+      {{ errorMessage() }}
+    </div>
+  }
+
   <form [formGroup]="pollutionForm" (ngSubmit)="onSubmit()" class="pollution-form">
     <div class="form-group">
       <label for="titre">Titre de la pollution</label>
@@ -147,13 +154,18 @@
       <button
         type="submit"
         class="btn btn-primary"
-        [disabled]="pollutionForm.invalid">
-        Déclarer
+        [disabled]="pollutionForm.invalid || isLoading()">
+        @if (isLoading()) {
+          Traitement...
+        } @else {
+          {{ isEditMode() ? 'Mettre à jour' : 'Déclarer' }}
+        }
       </button>
       <button
         type="button"
         class="btn btn-secondary"
-        (click)="pollutionForm.reset()">
+        (click)="pollutionForm.reset()"
+        [disabled]="isLoading()">
         Réinitialiser
       </button>
     </div>
@@ -166,11 +178,9 @@
 <div class="success-message">
   <div class="success-content">
     <div class="success-icon">✅</div>
-    <h2>Déclaration enregistrée avec succès!</h2>
-    <p>Votre déclaration de pollution a été enregistrée. Vous pouvez la consulter dans le récapitulatif ci-dessous.</p>
-    <button type="button" class="btn btn-primary" (click)="resetForm()">
-      Nouvelle déclaration
-    </button>
+    <h2>{{ isEditMode() ? 'Pollution mise à jour avec succès!' : 'Déclaration enregistrée avec succès!' }}</h2>
+    <p>{{ isEditMode() ? 'Les modifications ont été sauvegardées.' : 'Votre déclaration de pollution a été enregistrée.' }}</p>
+    <p class="redirect-info">Redirection en cours...</p>
   </div>
 </div>
 }
