@@ -1,8 +1,6 @@
 # Dependencies
-node_modules
 npm-debug.log
 yarn-error.log
-bun.lock
 
 # Build output
 dist
