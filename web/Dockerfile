@@ -43,7 +43,7 @@ RUN echo 'server { \
   gzip_types text/plain text/css text/xml text/javascript application/javascript application/xml+rss application/json; \
   }' > /etc/nginx/conf.d/default.conf
 
-# Expose port 80 for Render.com
+# Expose port 80
 EXPOSE 80
 
 # Start nginx

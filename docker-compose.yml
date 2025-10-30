@@ -1,0 +1,30 @@
+services:
+  # Angular Web Frontend
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    depends_on:
+      - api
+
+  # Express API Backend
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - CORS_ORIGIN=http://localhost
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s

@@ -1,8 +1,29 @@
 services:
+  # Angular Web Frontend
   - type: web
-    name: angular-node-monorepo
+    name: tp4-web
     env: docker
-    dockerContext: .
+    dockerContext: ./web
+    dockerfilePath: ./Dockerfile
     plan: free
     region: frankfurt
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+  # Express API Backend
+  - type: web
+    name: tp4-api
+    env: docker
+    dockerContext: ./api
     dockerfilePath: ./Dockerfile
+    plan: free
+    region: frankfurt
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: CORS_ORIGIN
+        value: https://tp4-web.onrender.com
+    healthCheckPath: /health

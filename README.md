@@ -1,59 +1,112 @@
-# Tp2
+# TP4 Monorepo
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.3.
+This monorepo contains both the web frontend and API backend for the TP4 project.
 
-## Development server
+## Project Structure
 
-To start a local development server, run:
+```
+tp4/
+├── web/          # Angular frontend application
+├── api/          # Backend API
+├── .github/      # GitHub configuration
+└── README.md     # This file
+```
+
+## Web (Angular Frontend)
+
+The web application is an Angular project located in the `web/` directory.
+
+### Development server
+
+To start the development server:
 
 ```bash
+cd web
+npm install  # or bun install
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Navigate to `http://localhost:4200/`. The application will automatically reload when you modify source files.
 
-## Code scaffolding
+### Building
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+To build the web project:
 
 ```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
+cd web
 ng build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Build artifacts will be stored in the `web/dist/` directory.
 
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+### Running tests
 
 ```bash
+cd web
 ng test
 ```
 
-## Running end-to-end tests
+For more details, see the [web/README.md](web/README.md) file.
 
-For end-to-end (e2e) testing, run:
+## API (Backend)
+
+The API backend is located in the `api/` directory.
+
+### Development
 
 ```bash
-ng e2e
+cd api
+npm install  # or bun install
+npm run dev
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+For more details, see the [api/README.md](api/README.md) file.
+
+## Docker Deployment
+
+This project includes separate Docker images for the web frontend and API backend.
+
+### Building Individual Images
+
+**Build Web Frontend:**
+```bash
+cd web
+docker build -t tp4-web .
+docker run -p 80:80 tp4-web
+```
+
+**Build API Backend:**
+```bash
+cd api
+docker build -t tp4-api .
+docker run -p 3000:3000 tp4-api
+```
+
+### Using Docker Compose (Recommended)
+
+To run both services together:
+
+```bash
+# Build and start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop all services
+docker-compose down
+```
+
+This will start:
+- Web frontend on `http://localhost:80`
+- API backend on `http://localhost:3000`
+
+### Docker Images
+
+- **tp4-web**: Nginx-based image serving the Angular application (production build)
+- **tp4-api**: Bun-based image running the Express API server
 
 ## Additional Resources
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- [Angular CLI Documentation](https://angular.dev/tools/cli)
+- [Angular Documentation](https://angular.dev)
