@@ -15,7 +15,7 @@ COPY . .
 
 # Build the Angular application for production
 ENV NODE_ENV=production
-RUN bun run build
+RUN bun run build --configuration production
 
 # Production stage - use nginx to serve static files
 FROM nginx:alpine AS release

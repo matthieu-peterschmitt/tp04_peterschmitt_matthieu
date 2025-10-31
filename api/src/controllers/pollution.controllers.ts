@@ -20,3 +20,41 @@ export async function getOne(req: Request, res: Response) {
   res.setHeader("Content-Type", "application/json");
   res.send(data);
 }
+
+export async function create(req: Request, res: Response) {
+  const data = await db.pollutions.create(req.body).catch((err) => {
+    res.status(400).send(err);
+  });
+
+  res.setHeader("Content-Type", "application/json");
+  res.send(data);
+}
+
+export async function update(req: Request, res: Response) {
+  const { id } = req.params;
+  const data = await db.pollutions
+    .update(req.body, {
+      where: { id },
+    })
+    .catch((err) => {
+      res.status(400).send(err);
+    });
+
+  res.setHeader("Content-Type", "application/json");
+  res.send(data);
+}
+
+export async function deleteOne(req: Request, res: Response) {
+  const { id } = req.params;
+
+  const data = await db.pollutions
+    .destroy({
+      where: { id },
+    })
+    .catch((err) => {
+      res.status(400).send(err);
+    });
+
+  res.setHeader("Content-Type", "application/json");
+  res.send(data);
+}

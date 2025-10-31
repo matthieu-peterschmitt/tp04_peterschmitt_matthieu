@@ -41,3 +41,13 @@ export const login = (req: Request, res: Response) => {
     });
   }
 };
+
+export async function getUsers(req: Request, res: Response) {
+  return await Utilisateurs.findAll().catch((err) => res.status(400).send(err));
+}
+
+export async function createUser(req: Request, res: Response) {
+  return await Utilisateurs.create(req.body).catch((err) =>
+    res.status(400).send(err),
+  );
+}

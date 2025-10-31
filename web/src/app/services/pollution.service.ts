@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable, inject } from "@angular/core";
 import type { Observable } from "rxjs";
-import { environment as prodEnvironment } from "../../environments/environment.prod";
+import { environment } from "../../environments/environment";
 import type {
     PollutionDeclaration,
     PollutionType,
@@ -21,8 +21,18 @@ export interface PollutionFilters {
 export class PollutionService {
 	private readonly http = inject(HttpClient);
 	private readonly mockService = inject(MockPollutionService);
-	private readonly apiUrl = `${prodEnvironment.apiUrl}/pollutions`;
-	private readonly useMock = !prodEnvironment.production;
+	private readonly apiUrl = `${environment.apiUrl}/pollutions`;
+	private readonly useMock = !environment.production;
+
+	/**
+	 * Récupère toutes les déclarations de pollution
+	 */
+	getAll(): Observable<PollutionDeclaration[]> {
+		if (this.useMock) {
+			return this.mockService.getAllPollutions();
+		}
+		return this.http.get<PollutionDeclaration[]>(this.apiUrl);
+	}
 
 	/**
 	 * Récupère toutes les déclarations de pollution

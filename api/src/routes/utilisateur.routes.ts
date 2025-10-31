@@ -1,12 +1,16 @@
 import { Express } from "express";
+import {
+  createUser,
+  getUsers,
+  login,
+} from "../controllers/utilisateur.controllers";
 
 export function utilisateurs(app: Express) {
-  const utilisateur = require("../controllers/utilisateur.controllers.js");
-
   var router = require("express").Router();
 
-  // login utilisateur
-  router.post("/login", utilisateur.login);
+  router.post("/login", login);
+  router.get("/", getUsers);
+  router.post("/", createUser);
 
-  app.use("/api/utilisateur", router);
+  app.use("/api/users", router);
 }
