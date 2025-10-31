@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { v7 } from "uuid";
 import db from "../models";
 
 const Utilisateurs = db.utilisateurs;
@@ -43,11 +44,39 @@ export const login = (req: Request, res: Response) => {
 };
 
 export async function getUsers(req: Request, res: Response) {
-  return await Utilisateurs.findAll().catch((err) => res.status(400).send(err));
+  await Utilisateurs.findAll().then((data) => res.send(data)).catch((err) => res.sendStatus(400).send(err));
 }
 
 export async function createUser(req: Request, res: Response) {
-  return await Utilisateurs.create(req.body).catch((err) =>
-    res.status(400).send(err),
-  );
+  const id = v7();
+
+  const user = {
+    id: id,
+    login: req.body.login,
+    pass: req.body.pass,
+    nom: req.body.nom,
+    prenom: req.body.prenom,
+  };
+
+  if (user.login && user.pass && user.nom && user.prenom) {
+    return Utilisateurs.create(user).then((data) => {
+      res.send(data);
+    });
+  }
+  // missing parameters
+  let message = "missing parameters";
+ if (!user.login) {
+   message += " login";
+ }
+ if (!user.pass) {
+   message += " password";
+ }
+ if (!user.nom) {
+   message += " nom";
+ }
+ if (!user.prenom) {
+   message += " prenom";
+ }
+
+ res.status(400).send({ message: message });
 }

@@ -3,7 +3,7 @@ import type { Routes } from "@angular/router";
 export const routes: Routes = [
 	{
 		path: "",
-		redirectTo: "/pollutions",
+		redirectTo: "/users",
 		pathMatch: "full",
 	},
 	{
@@ -32,6 +32,20 @@ export const routes: Routes = [
 		loadComponent: () =>
 			import("./components/pollution-edit/pollution-edit.component").then(
 				(m) => m.PollutionEditComponent,
+			),
+	},
+	{
+		path: "users",
+		loadComponent: () =>
+			import("./components/user-list/user-list.component").then(
+				(m) => m.UserListComponent,
+			),
+	},
+	{
+		path: "user/new",
+		loadComponent: () =>
+			import("./components/user-form/user-form.component").then(
+				(m) => m.UserFormComponent,
 			),
 	},
 	{

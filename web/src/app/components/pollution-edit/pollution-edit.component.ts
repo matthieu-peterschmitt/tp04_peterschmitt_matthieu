@@ -1,11 +1,11 @@
 import { CommonModule } from "@angular/common";
 import {
-	ChangeDetectionStrategy,
-	Component,
-	computed,
-	inject,
-	type OnInit,
-	signal,
+    ChangeDetectionStrategy,
+    Component,
+    computed,
+    inject,
+    type OnInit,
+    signal,
 } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { catchError, EMPTY } from "rxjs";

@@ -1,25 +1,25 @@
 import { CommonModule } from "@angular/common";
 import {
-	ChangeDetectionStrategy,
-	Component,
-	EventEmitter,
-	inject,
-	input,
-	type OnInit,
-	Output,
-	signal,
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  inject,
+  input,
+  type OnInit,
+  Output,
+  signal,
 } from "@angular/core";
 import {
-	FormBuilder,
-	type FormGroup,
-	ReactiveFormsModule,
-	Validators,
+  FormBuilder,
+  type FormGroup,
+  ReactiveFormsModule,
+  Validators,
 } from "@angular/forms";
 import { Router } from "@angular/router";
 import { catchError, EMPTY } from "rxjs";
 import {
-	type PollutionDeclaration,
-	PollutionType,
+  type PollutionDeclaration,
+  PollutionType,
 } from "../../interfaces/pollution-declaration.interface";
 import { PollutionService } from "../../services/pollution.service";
 
@@ -97,20 +97,37 @@ export class PollutionFormComponent implements OnInit {
 
 	private populateForm(pollution: PollutionDeclaration): void {
 		// Convertir la date en format yyyy-MM-dd pour l'input date
-		const dateString =
-			pollution.dateObservation instanceof Date
-				? pollution.dateObservation.toISOString().split("T")[0]
-				: new Date(pollution.dateObservation).toISOString().split("T")[0];
+		console.log('Full pollution object:', pollution);
+		console.log('Type of pollution:', typeof pollution);
+		console.log('date_observation value:', pollution.date_observation);
+		console.log('date_observation type:', typeof pollution.date_observation);
+		console.log('All keys:', Object.keys(pollution));
+
+		let dateString = '';
+
+		// Si pollution.date_observation n'existe pas directement, vérifier les autres propriétés
+		const dateValue = pollution.date_observation || (pollution as any)['dateObservation'];
+
+		if (dateValue) {
+			try {
+				dateString = dateValue instanceof Date
+					? dateValue.toISOString().split("T")[0]
+					: new Date(dateValue).toISOString().split("T")[0];
+			} catch (error) {
+				console.error('Error parsing date:', error);
+				dateString = '';
+			}
+		}
 
 		this.pollutionForm.patchValue({
 			titre: pollution.titre,
-			type: pollution.type,
+			type: pollution.type_pollution,
 			description: pollution.description,
 			dateObservation: dateString,
 			lieu: pollution.lieu,
 			latitude: pollution.latitude,
 			longitude: pollution.longitude,
-			photoUrl: pollution.photoUrl || "",
+			photoUrl: pollution.photo_url || "",
 		});
 	}
 
@@ -119,13 +136,13 @@ export class PollutionFormComponent implements OnInit {
 			const formValue = this.pollutionForm.value;
 			const declaration: PollutionDeclaration = {
 				titre: formValue.titre.trim(),
-				type: formValue.type as PollutionType,
+				type_pollution: formValue.type as PollutionType,
 				description: formValue.description.trim(),
-				dateObservation: new Date(formValue.dateObservation),
+				date_observation: new Date(formValue.dateObservation),
 				lieu: formValue.lieu.trim(),
 				latitude: parseFloat(formValue.latitude),
 				longitude: parseFloat(formValue.longitude),
-				photoUrl: formValue.photoUrl ? formValue.photoUrl.trim() : undefined,
+				photo_url: formValue.photoUrl ? formValue.photoUrl.trim() : undefined,
 			};
 
 			if (this.isEditMode()) {

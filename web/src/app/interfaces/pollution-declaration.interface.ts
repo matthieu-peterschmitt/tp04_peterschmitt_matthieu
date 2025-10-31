@@ -1,13 +1,13 @@
 export interface PollutionDeclaration {
 	id?: number;
 	titre: string;
-	type: PollutionType;
+	type_pollution: PollutionType;
 	description: string;
-	dateObservation: Date;
+	date_observation: Date;
 	lieu: string;
 	latitude: number;
 	longitude: number;
-	photoUrl?: string;
+	photo_url?: string;
 }
 
 export enum PollutionType {

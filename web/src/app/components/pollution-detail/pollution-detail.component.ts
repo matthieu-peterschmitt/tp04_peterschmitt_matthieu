@@ -1,11 +1,11 @@
 import { CommonModule } from "@angular/common";
 import {
-	ChangeDetectionStrategy,
-	Component,
-	computed,
-	inject,
-	type OnInit,
-	signal,
+    ChangeDetectionStrategy,
+    Component,
+    computed,
+    inject,
+    type OnInit,
+    signal,
 } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { catchError, EMPTY } from "rxjs";
@@ -44,7 +44,7 @@ import { PollutionService } from "../../services/pollution.service";
           <div class="detail-content">
             <div class="title-section">
               <h1>{{ pollution()!.titre }}</h1>
-              <span class="pollution-type">{{ pollution()!.type }}</span>
+              <span class="pollution-type">{{ pollution()!.type_pollution }}</span>
             </div>
 
             <div class="info-grid">
@@ -70,20 +70,20 @@ import { PollutionService } from "../../services/pollution.service";
                 <h3>Date d'observation</h3>
                 <p class="date">
                   <span class="icon">📅</span>
-                  {{ pollution()!.dateObservation | date:'EEEE dd MMMM yyyy':'fr' }}
+                  {{ pollution()!.date_observation | date:'EEEE dd MMMM yyyy':'fr' }}
                 </p>
                 <p class="time">
                   <span class="icon">🕒</span>
-                  {{ pollution()!.dateObservation | date:'HH:mm':'fr' }}
+                  {{ pollution()!.date_observation | date:'HH:mm':'fr' }}
                 </p>
               </div>
 
-              @if (pollution()!.photoUrl) {
+              @if (pollution()!.photo_url) {
                 <div class="info-section photo-section">
                   <h3>Photo</h3>
                   <div class="photo-container">
                     <img
-                      [src]="pollution()!.photoUrl"
+                      [src]="pollution()!.photo_url"
                       [alt]="'Photo de ' + pollution()!.titre"
                       class="pollution-photo">
                   </div>

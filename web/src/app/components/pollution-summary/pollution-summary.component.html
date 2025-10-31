@@ -44,8 +44,8 @@
           }
         </div>
         <div class="card-actions">
-          <span class="pollution-type" [class]="getPollutionTypeClass(declaration.type)">
-            {{ declaration.type }}
+          <span class="pollution-type" [class]="getPollutionTypeClass(declaration.type_pollution)">
+            {{ declaration.type_pollution }}
           </span>
           <button class="delete-btn" (click)="deleteDeclaration(i)" title="Supprimer">
             ❌
@@ -62,7 +62,7 @@
         <div class="info-grid">
           <div class="field-group">
             <label>Date d'observation :</label>
-            <span>{{ formatDate(declaration.dateObservation) }}</span>
+            <span>{{ formatDate(declaration.date_observation) }}</span>
           </div>
 
           @if (isLastDeclaration(i)) {
@@ -94,17 +94,17 @@
           </div>
         </div>
 
-        @if (declaration.photoUrl) {
+        @if (declaration.photo_url) {
         <div class="photo-section">
           <label>Photo :</label>
           <div class="photo-container">
             <img
-              [src]="declaration.photoUrl"
+              [src]="declaration.photo_url"
               [alt]="'Photo de ' + declaration.titre"
               class="pollution-photo"
               (error)="onImageError($event)"
               loading="lazy">
-            <a [href]="declaration.photoUrl" target="_blank" class="photo-link">
+            <a [href]="declaration.photo_url" target="_blank" class="photo-link">
               Voir l'image complète
             </a>
           </div>

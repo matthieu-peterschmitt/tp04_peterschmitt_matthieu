@@ -22,7 +22,7 @@ export class PollutionSummaryComponent {
   protected readonly declarationsByType = computed(() => {
     const counts: { [key: string]: number } = {};
     this.declarations.forEach(declaration => {
-      counts[declaration.type] = (counts[declaration.type] || 0) + 1;
+      counts[declaration.type_pollution] = (counts[declaration.type_pollution] || 0) + 1;
     });
     return counts;
   });

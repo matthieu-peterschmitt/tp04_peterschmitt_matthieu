@@ -10,5 +10,5 @@ import { RouterLink, RouterOutlet } from "@angular/router";
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
-	protected readonly title = "TP3 - Gestion des Pollutions";
+	protected readonly title = "TP4 - Gestion des Pollutions";
 }

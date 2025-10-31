@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable, inject } from "@angular/core";
-import type { Observable } from "rxjs";
+import { map, type Observable } from "rxjs";
 import { environment } from "../../environments/environment";
 import type {
     PollutionDeclaration,
@@ -31,7 +31,14 @@ export class PollutionService {
 		if (this.useMock) {
 			return this.mockService.getAllPollutions();
 		}
-		return this.http.get<PollutionDeclaration[]>(this.apiUrl);
+		return this.http.get<PollutionDeclaration[]>(this.apiUrl).pipe(
+			map(pollutions => pollutions.map(pollution => ({
+				...pollution,
+				date_observation: typeof pollution.date_observation === 'string'
+					? new Date(pollution.date_observation)
+					: pollution.date_observation
+			})))
+		);
 	}
 
 	/**
@@ -41,7 +48,14 @@ export class PollutionService {
 		if (this.useMock) {
 			return this.mockService.getAllPollutions();
 		}
-		return this.http.get<PollutionDeclaration[]>(this.apiUrl);
+		return this.http.get<PollutionDeclaration[]>(this.apiUrl).pipe(
+			map(pollutions => pollutions.map(pollution => ({
+				...pollution,
+				date_observation: typeof pollution.date_observation === 'string'
+					? new Date(pollution.date_observation)
+					: pollution.date_observation
+			})))
+		);
 	}
 
 	/**
@@ -79,7 +93,14 @@ export class PollutionService {
 		if (this.useMock) {
 			return this.mockService.getPollutionById(id);
 		}
-		return this.http.get<PollutionDeclaration>(`${this.apiUrl}/${id}`);
+		return this.http.get<PollutionDeclaration>(`${this.apiUrl}/${id}`).pipe(
+			map(pollution => ({
+				...pollution,
+				date_observation: typeof pollution.date_observation === 'string'
+					? new Date(pollution.date_observation)
+					: pollution.date_observation
+			}))
+		);
 	}
 
 	/**
@@ -107,6 +128,7 @@ export class PollutionService {
 		return this.http.put<PollutionDeclaration>(
 			`${this.apiUrl}/${id}`,
 			pollution,
+			{ responseType: 'text' as 'json' }
 		);
 	}
 

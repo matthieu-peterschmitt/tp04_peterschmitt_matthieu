@@ -1,22 +1,22 @@
 import { CommonModule } from "@angular/common";
 import {
-	ChangeDetectionStrategy,
-	Component,
-	computed,
-	inject,
-	type OnInit,
-	signal,
+    ChangeDetectionStrategy,
+    Component,
+    computed,
+    inject,
+    type OnInit,
+    signal,
 } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { catchError, EMPTY } from "rxjs";
 import {
-	type PollutionDeclaration,
-	PollutionType,
+    type PollutionDeclaration,
+    PollutionType,
 } from "../../interfaces/pollution-declaration.interface";
 import {
-	type PollutionFilters,
-	PollutionService,
+    type PollutionFilters,
+    PollutionService,
 } from "../../services/pollution.service";
 
 @Component({
@@ -96,17 +96,17 @@ import {
             <div class="pollution-card">
               <div class="pollution-header">
                 <h4>{{ pollution.titre }}</h4>
-                <span class="pollution-type">{{ pollution.type }}</span>
+                <span class="pollution-type">{{ pollution.type_pollution }}</span>
               </div>
 
               <div class="pollution-content">
                 <p class="description">{{ pollution.description }}</p>
                 <p class="location">📍 {{ pollution.lieu }}</p>
-                <p class="date">📅 {{ pollution.dateObservation | date:'dd/MM/yyyy' }}</p>
+                <p class="date">📅 {{ pollution.date_observation | date:'dd/MM/yyyy' }}</p>
 
-                @if (pollution.photoUrl) {
+                @if (pollution.photo_url) {
                   <img
-                    [src]="pollution.photoUrl"
+                    [src]="pollution.photo_url"
                     [alt]="'Photo de ' + pollution.titre"
                     class="pollution-image">
                 }
@@ -361,7 +361,7 @@ export class PollutionListComponent implements OnInit {
 
 		return pollutions.filter((pollution) => {
 			// Filtre par type
-			if (currentFilters.type && pollution.type !== currentFilters.type) {
+			if (currentFilters.type && pollution.type_pollution !== currentFilters.type) {
 				return false;
 			}
 
@@ -378,7 +378,7 @@ export class PollutionListComponent implements OnInit {
 			// Filtre par date début
 			if (
 				currentFilters.dateFrom &&
-				new Date(pollution.dateObservation) < currentFilters.dateFrom
+				new Date(pollution.date_observation) < currentFilters.dateFrom
 			) {
 				return false;
 			}
@@ -386,7 +386,7 @@ export class PollutionListComponent implements OnInit {
 			// Filtre par date fin
 			if (
 				currentFilters.dateTo &&
-				new Date(pollution.dateObservation) > currentFilters.dateTo
+				new Date(pollution.date_observation) > currentFilters.dateTo
 			) {
 				return false;
 			}

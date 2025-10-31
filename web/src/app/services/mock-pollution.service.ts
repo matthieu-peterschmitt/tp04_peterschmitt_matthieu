@@ -1,8 +1,8 @@
 import { Injectable, signal } from "@angular/core";
 import { delay, type Observable, of, throwError } from "rxjs";
 import {
-	type PollutionDeclaration,
-	PollutionType,
+    type PollutionDeclaration,
+    PollutionType,
 } from "../interfaces/pollution-declaration.interface";
 import type { PollutionFilters } from "./pollution.service";
 
@@ -14,49 +14,49 @@ export class MockPollutionService {
 		{
 			id: 1,
 			titre: "Déversement d'huile dans la Seine",
-			type: PollutionType.EAU,
+			type_pollution: PollutionType.EAU,
 			description:
 				"Important déversement d'huile moteur observé près du pont Neuf. La pollution s'étend sur environ 100 mètres et affecte la faune aquatique locale.",
-			dateObservation: new Date("2024-01-15T14:30:00"),
+			date_observation: new Date("2024-01-15T14:30:00"),
 			lieu: "Seine, Pont Neuf, Paris 1er",
 			latitude: 48.8566,
 			longitude: 2.3422,
-			photoUrl:
+			photo_url:
 				"https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?w=400",
 		},
 		{
 			id: 2,
 			titre: "Dépôt sauvage de déchets industriels",
-			type: PollutionType.DEPOT_SAUVAGE,
+			type_pollution: PollutionType.DEPOT_SAUVAGE,
 			description:
 				"Découverte d'un dépôt clandestin de barils contenant des substances chimiques non identifiées dans une zone boisée.",
-			dateObservation: new Date("2024-01-20T09:15:00"),
+			date_observation: new Date("2024-01-20T09:15:00"),
 			lieu: "Forêt de Vincennes, Bois de Vincennes",
 			latitude: 48.8278,
 			longitude: 2.4394,
-			photoUrl:
+			photo_url:
 				"https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=400",
 		},
 		{
 			id: 3,
 			titre: "Pollution plastique sur la plage",
-			type: PollutionType.PLASTIQUE,
+			type_pollution: PollutionType.PLASTIQUE,
 			description:
 				"Accumulation massive de déchets plastiques sur le rivage après une tempête. Principalement des bouteilles, sacs et emballages alimentaires.",
-			dateObservation: new Date("2024-01-25T16:45:00"),
+			date_observation: new Date("2024-01-25T16:45:00"),
 			lieu: "Plage de Deauville, Calvados",
 			latitude: 49.3598,
 			longitude: 0.0748,
-			photoUrl:
+			photo_url:
 				"https://images.unsplash.com/photo-1621451537084-482c73073a0f?w=400",
 		},
 		{
 			id: 4,
 			titre: "Fumées toxiques d'une usine",
-			type: PollutionType.AIR,
+			type_pollution: PollutionType.AIR,
 			description:
 				"Émissions anormales de fumées noires et odorantes provenant d'une installation industrielle, causant des irritations respiratoires aux riverains.",
-			dateObservation: new Date("2024-02-01T07:20:00"),
+			date_observation: new Date("2024-02-01T07:20:00"),
 			lieu: "Zone industrielle de Roubaix, Nord",
 			latitude: 50.6942,
 			longitude: 3.1746,
@@ -64,23 +64,23 @@ export class MockPollutionService {
 		{
 			id: 5,
 			titre: "Déversement de produits chimiques",
-			type: PollutionType.CHIMIQUE,
+			type_pollution: PollutionType.CHIMIQUE,
 			description:
 				"Accident lors du transport de substances chimiques ayant entraîné un déversement sur la chaussée et dans les égouts.",
-			dateObservation: new Date("2024-02-05T11:30:00"),
+			date_observation: new Date("2024-02-05T11:30:00"),
 			lieu: "Autoroute A1, sortie Lille-Sud",
 			latitude: 50.5736,
 			longitude: 3.0635,
-			photoUrl:
+			photo_url:
 				"https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400",
 		},
 		{
 			id: 6,
 			titre: "Pollution sonore chantier de nuit",
-			type: PollutionType.AUTRE,
+			type_pollution: PollutionType.AUTRE,
 			description:
 				"Travaux de construction effectués en violation des horaires autorisés, causant des nuisances sonores importantes pour le voisinage.",
-			dateObservation: new Date("2024-02-10T23:15:00"),
+			date_observation: new Date("2024-02-10T23:15:00"),
 			lieu: "Quartier de la Défense, Puteaux",
 			latitude: 48.8918,
 			longitude: 2.2364,
@@ -104,7 +104,7 @@ export class MockPollutionService {
 	): Observable<PollutionDeclaration[]> {
 		const filteredPollutions = this.pollutions().filter((pollution) => {
 			// Filtre par type
-			if (filters.type && pollution.type !== filters.type) {
+			if (filters.type && pollution.type_pollution !== filters.type) {
 				return false;
 			}
 
@@ -119,7 +119,7 @@ export class MockPollutionService {
 			// Filtre par date début
 			if (
 				filters.dateFrom &&
-				new Date(pollution.dateObservation) < filters.dateFrom
+				new Date(pollution.date_observation) < filters.dateFrom
 			) {
 				return false;
 			}
@@ -127,7 +127,7 @@ export class MockPollutionService {
 			// Filtre par date fin
 			if (
 				filters.dateTo &&
-				new Date(pollution.dateObservation) > filters.dateTo
+				new Date(pollution.date_observation) > filters.dateTo
 			) {
 				return false;
 			}
@@ -235,49 +235,49 @@ export class MockPollutionService {
 			{
 				id: 1,
 				titre: "Déversement d'huile dans la Seine",
-				type: PollutionType.EAU,
+				type_pollution: PollutionType.EAU,
 				description:
 					"Important déversement d'huile moteur observé près du pont Neuf. La pollution s'étend sur environ 100 mètres et affecte la faune aquatique locale.",
-				dateObservation: new Date("2024-01-15T14:30:00"),
+				date_observation: new Date("2024-01-15T14:30:00"),
 				lieu: "Seine, Pont Neuf, Paris 1er",
 				latitude: 48.8566,
 				longitude: 2.3422,
-				photoUrl:
+				photo_url:
 					"https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?w=400",
 			},
 			{
 				id: 2,
 				titre: "Dépôt sauvage de déchets industriels",
-				type: PollutionType.DEPOT_SAUVAGE,
+				type_pollution: PollutionType.DEPOT_SAUVAGE,
 				description:
 					"Découverte d'un dépôt clandestin de barils contenant des substances chimiques non identifiées dans une zone boisée.",
-				dateObservation: new Date("2024-01-20T09:15:00"),
+				date_observation: new Date("2024-01-20T09:15:00"),
 				lieu: "Forêt de Vincennes, Bois de Vincennes",
 				latitude: 48.8278,
 				longitude: 2.4394,
-				photoUrl:
+				photo_url:
 					"https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=400",
 			},
 			{
 				id: 3,
 				titre: "Pollution plastique sur la plage",
-				type: PollutionType.PLASTIQUE,
+				type_pollution: PollutionType.PLASTIQUE,
 				description:
 					"Accumulation massive de déchets plastiques sur le rivage après une tempête. Principalement des bouteilles, sacs et emballages alimentaires.",
-				dateObservation: new Date("2024-01-25T16:45:00"),
+				date_observation: new Date("2024-01-25T16:45:00"),
 				lieu: "Plage de Deauville, Calvados",
 				latitude: 49.3598,
 				longitude: 0.0748,
-				photoUrl:
+				photo_url:
 					"https://images.unsplash.com/photo-1621451537084-482c73073a0f?w=400",
 			},
 			{
 				id: 4,
 				titre: "Fumées toxiques d'une usine",
-				type: PollutionType.AIR,
+				type_pollution: PollutionType.AIR,
 				description:
 					"Émissions anormales de fumées noires et odorantes provenant d'une installation industrielle, causant des irritations respiratoires aux riverains.",
-				dateObservation: new Date("2024-02-01T07:20:00"),
+				date_observation: new Date("2024-02-01T07:20:00"),
 				lieu: "Zone industrielle de Roubaix, Nord",
 				latitude: 50.6942,
 				longitude: 3.1746,
@@ -285,23 +285,23 @@ export class MockPollutionService {
 			{
 				id: 5,
 				titre: "Déversement de produits chimiques",
-				type: PollutionType.CHIMIQUE,
+				type_pollution: PollutionType.CHIMIQUE,
 				description:
 					"Accident lors du transport de substances chimiques ayant entraîné un déversement sur la chaussée et dans les égouts.",
-				dateObservation: new Date("2024-02-05T11:30:00"),
+				date_observation: new Date("2024-02-05T11:30:00"),
 				lieu: "Autoroute A1, sortie Lille-Sud",
 				latitude: 50.5736,
 				longitude: 3.0635,
-				photoUrl:
+				photo_url:
 					"https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400",
 			},
 			{
 				id: 6,
 				titre: "Pollution sonore chantier de nuit",
-				type: PollutionType.AUTRE,
+				type_pollution: PollutionType.AUTRE,
 				description:
 					"Travaux de construction effectués en violation des horaires autorisés, causant des nuisances sonores importantes pour le voisinage.",
-				dateObservation: new Date("2024-02-10T23:15:00"),
+				date_observation: new Date("2024-02-10T23:15:00"),
 				lieu: "Quartier de la Défense, Puteaux",
 				latitude: 48.8918,
 				longitude: 2.2364,

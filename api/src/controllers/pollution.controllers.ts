@@ -6,8 +6,7 @@ export async function getAll(req: Request, res: Response) {
     res.status(400).send(err);
   });
 
-  res.setHeader("Content-Type", "application/json");
-  res.send(data);
+  res.json(data);
 }
 
 export async function getOne(req: Request, res: Response) {
@@ -24,10 +23,10 @@ export async function getOne(req: Request, res: Response) {
 export async function create(req: Request, res: Response) {
   const data = await db.pollutions.create(req.body).catch((err) => {
     res.status(400).send(err);
+    console.log(err)
   });
 
-  res.setHeader("Content-Type", "application/json");
-  res.send(data);
+  res.json(data);
 }
 
 export async function update(req: Request, res: Response) {
