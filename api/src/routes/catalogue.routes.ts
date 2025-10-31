@@ -1,7 +1,7 @@
 import { Express, Router } from "express";
 import catalogue from "../controllers/catalogue.controllers.js";
 
-export default function routes(app: Express) {
+export function catalogues(app: Express) {
   var router = Router();
 
   router.get("/", catalogue);
