@@ -32,7 +32,7 @@ export async function create(req: Request, res: Response) {
 
 export async function update(req: Request, res: Response) {
   const { id } = req.params;
-  const data = await db.pollutions
+  await db.pollutions
     .update(req.body, {
       where: { id },
     })
@@ -41,13 +41,13 @@ export async function update(req: Request, res: Response) {
     });
 
   res.setHeader("Content-Type", "application/json");
-  res.send(data);
+  res.sendStatus(200);
 }
 
 export async function deleteOne(req: Request, res: Response) {
   const { id } = req.params;
 
-  const data = await db.pollutions
+  await db.pollutions
     .destroy({
       where: { id },
     })
@@ -56,5 +56,5 @@ export async function deleteOne(req: Request, res: Response) {
     });
 
   res.setHeader("Content-Type", "application/json");
-  res.send(data);
+  res.sendStatus(200)
 }
